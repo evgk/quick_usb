@@ -267,13 +267,14 @@ class _QuickUsbDesktop extends QuickUsbPlatform {
   @override
   Future<UsbDeviceDescription> getDeviceDescription(UsbDevice usbDevice) async {
     String? manufacturer;
-    String? product;
+    String? product = "default";
     String? serialNumber;
     var descPtr = ffi.calloc<libusb_device_descriptor>();
     try {
       var handle = _libusb.libusb_open_device_with_vid_pid(
           nullptr, usbDevice.vendorId, usbDevice.productId);
       if (handle != nullptr) {
+        product = "opened";
         var device = _libusb.libusb_get_device(handle);
         if (device != nullptr) {
           var getDesc = _libusb.libusb_get_device_descriptor(device, descPtr) ==
@@ -285,6 +286,7 @@ class _QuickUsbDesktop extends QuickUsbPlatform {
                   _getStringDescriptorASCII(handle, descPtr.ref.iManufacturer);
             }
             */
+            product = "iProduct: ${descPtr.ref.iProduct}";
             if (descPtr.ref.iProduct > 0) {
               product = _getStringDescriptorASCII(handle, descPtr.ref.iProduct);
             }
@@ -315,6 +317,8 @@ class _QuickUsbDesktop extends QuickUsbPlatform {
           handle, descIndex, string.cast(), 256);
       if (ret > 0) {
         result = string.toDartString();
+      } else {
+        result = "get_string_descriptor_ascii: ${ret}, index: ${descIndex}";
       }
     } finally {
       ffi.calloc.free(string);
