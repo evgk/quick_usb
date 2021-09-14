@@ -279,10 +279,12 @@ class _QuickUsbDesktop extends QuickUsbPlatform {
           var getDesc = _libusb.libusb_get_device_descriptor(device, descPtr) ==
               libusb_error.LIBUSB_SUCCESS;
           if (getDesc) {
+            /*
             if (descPtr.ref.iManufacturer > 0) {
               manufacturer =
                   _getStringDescriptorASCII(handle, descPtr.ref.iManufacturer);
             }
+            */
             if (descPtr.ref.iProduct > 0) {
               product = _getStringDescriptorASCII(handle, descPtr.ref.iProduct);
             }
